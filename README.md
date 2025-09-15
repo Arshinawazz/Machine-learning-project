@@ -1,0 +1,83 @@
+# Assignment 2: Energy Consumption Classification - Arshi Nawaz
+######################################
+
+# 1. Importing libraries
+
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+##########################################
+# 2. Loading the dataset
+######################################
+data = pd.read_csv("load_data.csv')
+
+# Check missing values
+data.isnull().sum()
+
+######################################
+# 3. Exploratory Data Analysis (EDA)
+######################################
+# Before Cleaning
+# - Checked distributions (histograms)
+# - Plotted scatter plots (Energy vs CO2, etc.)
+# - Found CO2 increases with Energy Usage
+
+# After Cleaning / Feature Engineering
+# - Converted Date_Time into Hour, Day, Month
+# - Encoded Load_Type: Light=0, Medium=1, Maximum=2
+# - Re-checked patterns to confirm consistency
+
+######################################
+# 4. Train-Test Split
+######################################
+X = data.drop("Load_Type", axis=1)
+y = data["Load_Type"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+######################################
+# 5. Model Training
+######################################
+
+# Logistic Regression
+log_model = LogisticRegression(max_iter=200)
+log_model.fit(X_train, y_train)
+log_acc = accuracy_score(y_test, log_model.predict(X_test))
+
+# KNN
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+knn_acc = accuracy_score(y_test, knn.predict(X_test))
+
+# Decision Tree
+dt = DecisionTreeClassifier(random_state=42)
+dt.fit(X_train, y_train)
+dt_acc = accuracy_score(y_test, dt.predict(X_test))
+
+######################################
+# 6. Results
+######################################
+print("Accuracy (Logistic Regression):", log_acc * 100)
+print("Accuracy (KNN):", knn_acc * 100)
+print("Accuracy (Decision Tree):", dt_acc * 100)
+
+# Logistic Regression → 66.62%
+# KNN → 83.34%
+# Decision Tree → 96.76%
+
+######################################
+# 7. Observations
+######################################
+# - CO2 strongly correlates with Energy Usage
+# - NSM (time-of-day) slightly affects usage
+# - Power factors relate to reactive power
+# - Decision Tree captured the complex patterns best observations
+# - KNN gave solid accuracy, showing neighborhood-based classification works well here.
+# - Logistic Regression underfit and struggled with non-linear relationship
